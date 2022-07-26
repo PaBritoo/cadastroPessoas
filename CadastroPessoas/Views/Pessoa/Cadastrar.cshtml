@@ -1,0 +1,147 @@
+﻿
+@{
+    ViewBag.Title = "Cadastrar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts {
+    <script src="~/Scripts/vue-the-mask.js"></script>
+    <script src="~/Scripts/vee-validate.js"></script>
+    <script>
+
+        Vue.use(VueTheMask);
+        Vue.use(VeeValidate, {
+            classes: true,
+            classNames: {
+                valid: 'is-valid',
+                invalid: 'is-invalid'
+            }
+        });
+
+        new Vue({
+            el: '#FormCadastroPessoas'
+
+        });
+    </script>
+}
+
+<h2>Cadastrar</h2>
+
+@if (ViewBag.mensagemSucesso != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @ViewBag.mensagemSucesso
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div id="FormCadastroPessoas">
+    <form method="post" action="/Pessoa/CadastrarPost">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="Nome">Nome: <span>*</span></label>
+                <input type="text" v-validate="'required'" class="form-control" id="Nome" name="Nome">
+                <div class="invalid-feedback">
+                    Por favor digite seu nome completo.
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+                <label for="CPF">CPF: <span>*</span></label>
+                <input type="text" class="form-control" id="CPF" name="CPF" v-mask="'###.###.###-##'">
+            </div>
+            <div class="col-md-2">
+                <label for="DataNascimento">Data de Nascimento: <span>*</span></label>
+                <input type="date" class="form-control" id="DataNascimento" name="DataNascimento">
+            </div>
+            <div class="col-md-2">
+                <label for="EstadoCivil">Estado Cívil: <span>*</span></label>
+                <select class="form-select" id="EstadoCivil" name="EstadoCivil">
+                    <option selected>Selecione seu estado civil</option>
+                    <option value="Solteiro(a)">Solteiro(a)</option>
+                    <option value="Casado(a)">Casado(a)</option>
+                    <option value="Divorciado(a)">Divorciado(a)</option>
+                    <option value="Viúvo(a)">Viúvo(a)</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Sexo: <span>*</span></label>
+                <div class="form-check">
+                    <label for="flexRadioDefault1">Masculino</label>
+                    <input type="radio" class="form-check-input" id="flexRadioDefault1" name="Sexo" value="M">
+                </div>
+                <div class="form-check">
+                    <label for="flexRadioDefault2">Feminino</label>
+                    <input type="radio" class="form-check-input" id="flexRadioDefault2" name="Sexo" value="F">
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-2">
+                <label for="CEP">CEP: <span>*</span></label>
+                <input type="text" class="form-control" id="CEP" name="CEP" v-mask="'#####-###'">
+            </div>
+            <div class="col-md-6">
+                <label for="Endereco">Endereço: <span>*</span></label>
+                <input type="text" class="form-control" id="Endereco" name="Endereco">
+            </div>
+            <div class="col-md-1">
+                <label for="Numero">Número:<span>*</span></label>
+                <input type="text" class="form-control" id="Numero" name="Numero">
+            </div>
+            <div class="col-md-1">
+                <label for="Complemento">Complemento:</label>
+                <input type="text" class="form-control" id="Complemento" name="Complemento">
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="Bairro">Bairro:<span>*</span></label>
+                <input type="text" class="form-control" id="Bairro" name="Bairro">
+            </div>
+            <div class="col-md-3">
+                <label for="Cidade">Cidade:<span>*</span></label>
+                <input type="text" class="form-control" id="Cidade" name="Cidade">
+            </div>
+            <div class="col-md-2">
+                <label for="UF"> UF:<span>*</span></label>
+                <select class="form-select" id="UF" name="UF">
+                    <option selected>Selecione seu Estado</option>
+                    <option value="AC">Acre</option>
+                    <option value="AL">Alagoas</option>
+                    <option value="AP">Amapá</option>
+                    <option value="AM">Amazonas</option>
+                    <option value="BA">Bahia</option>
+                    <option value="CE">Ceará</option>
+                    <option value="DF">Distrito Federal</option>
+                    <option value="ES">Espírito Santo</option>
+                    <option value="GO">Goiás</option>
+                    <option value="MA">Maranhão</option>
+                    <option value="MT">Mato Grosso</option>
+                    <option value="MS">Mato Grosso do Sul</option>
+                    <option value="MG">Minas Gerais</option>
+                    <option value="PA">Pará</option>
+                    <option value="PB">Paraíba</option>
+                    <option value="PR">Paraná</option>
+                    <option value="PE">Pernambuco</option>
+                    <option value="PI">Piauí</option>
+                    <option value="RJ">Rio de Janeiro</option>
+                    <option value="RN">Rio Grande do Norte</option>
+                    <option value="RS">Rio Grande do Sul</option>
+                    <option value="RO">Rondônia</option>
+                    <option value="RR">Roraima</option>
+                    <option value="SC">Santa Catarina</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="SE">Sergipe</option>
+                    <option value="TO">Tocantins</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
