@@ -18,7 +18,7 @@ namespace CadastroPessoas.Controllers
         {
             using(Conexao db = new Conexao())
             {
-                bool existeCpf = db.Pessoa.Any(c => c.CPF == cpf);
+                bool existeCpf = db.Pessoa.Any(c => c.CPF == cpf);   /* teste!!!!! cabeça */
                 return Ok(new { resultado = existeCpf });
             }
             
