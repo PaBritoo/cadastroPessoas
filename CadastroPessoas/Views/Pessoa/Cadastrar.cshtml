@@ -2,26 +2,101 @@
 @{
     ViewBag.Title = "Cadastrar";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string dataAtual = string.Format("{0:yyyy-MM-dd}", DateTime.Now.AddDays(1));
+    string dataAtualFormatoBrasileiro = string.Format("{0:dd/MM/yyyy}", DateTime.Now);
 }
 
-@section scripts {
+@section Scripts {
     <script src="~/Scripts/vue-the-mask.js"></script>
     <script src="~/Scripts/vee-validate.js"></script>
-    <script>
+    <script src="~/Scripts/axios.js"></script>
 
+    <script>
         Vue.use(VueTheMask);
         Vue.use(VeeValidate, {
             classes: true,
             classNames: {
                 valid: 'is-valid',
                 invalid: 'is-invalid'
+            },
+
+            dictionary: {                                                                                    /*esta tag dictionary serve para alterar a msg no campo desejado , neste caso está sendo utilizado no campo da data*/
+                en: {
+                    messages: {
+                        required: 'Campo obrigatório',
+                        date_format: 'Data inválida',
+                        date_between: 'A data precisa estar entre 01/01/1990 até @dataAtualFormatoBrasileiro. '
+                    }
+                }
             }
         });
 
-        new Vue({
-            el: '#FormCadastroPessoas'
+        function ValidarCPF(strCPF) {
+            var Soma;
+            var Resto;
+            Soma = 0;
+            strCPF = strCPF.replace(/[^0-9]/g, '');                                                   /* esta função >> .replace(/[^\d.-]/g, '') << serve  para retirar os caracteres especiais. chama-se de expressão regular , e existem outros modelos*/
+            if (strCPF == "00000000000" || strCPF == "11111111111" || strCPF == "22222222222" ||
+                strCPF == "33333333333" || strCPF == "44444444444" || strCPF == "55555555555" ||
+                strCPF == "66666666666" || strCPF == "77777777777" || strCPF == "88888888888" ||
+                strCPF == "99999999999") return false;
 
-        });
+            for (i = 1; i <= 9; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11)) Resto = 0;
+            if (Resto != parseInt(strCPF.substring(9, 10))) return false;
+
+            Soma = 0;
+            for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11)) Resto = 0;
+            if (Resto != parseInt(strCPF.substring(10, 11))) return false;
+            return true;
+        }
+
+        function verificarCpfJaCadastrado(cpfDigitado) {
+            return new Promise(axios.get('/api/pessoa/verificar-cpf-ja-cadastrado', { params: { cpf: cpfDigitado } }).then(function (resposta) {
+                    resolve({
+                        valid: resposta.data.resultado,
+                        data: 'CPF já cadastrado.'
+                    })
+                }).catch(function () {
+                    resolve({
+                        valid: false,
+                        data: "Erro ao validar o CPF"
+                    });
+                }));
+        }
+        
+
+        new Vue({
+            el: '#formCadastroPessoas',
+            data: {
+                pessoa: {}
+            },
+            created: function () {
+                this.$validator.extend('validar-cpf', {                /*adiciona uma validação customizada dentro do vee validade */
+                    getMessage: 'CPF inválido',
+                    validate: function (value) {
+                        return ValidarCPF(value);
+                    }
+                });
+
+                this.$validator.extend('varificar-cpf-ja-cadastrado', {
+                    getMessage: function (campo, params, data) {
+                        return data;
+                    },
+                    validate: verificarCpfJaCadastrado
+                });
+
+            }
+        })
+
+
+
     </script>
 }
 
@@ -35,44 +110,61 @@
     </div>
 }
 
-<div id="FormCadastroPessoas">
+<div id="formCadastroPessoas">
     <form method="post" action="/Pessoa/CadastrarPost">
         <div class="row g-3">
             <div class="col-md-4">
                 <label for="Nome">Nome: <span>*</span></label>
-                <input type="text" v-validate="'required'" class="form-control" id="Nome" name="Nome">
+                <input type="text" v-validate="'required'" class="form-control" id="Nome" name="Nome" maxlength="200">
                 <div class="invalid-feedback">
-                    Por favor digite seu nome completo.
+                    Campo obrigatório.
                 </div>
             </div>
-            
+
             <div class="col-md-2">
-                <label for="CPF">CPF: <span>*</span></label>
-                <input type="text" class="form-control" id="CPF" name="CPF" v-mask="'###.###.###-##'">
+                <label for="CPF">CPF: <span>*</span> </label>
+                <input type="text" v-validate="'required|validar-cpf|varificar-cpf-ja-cadastrado'" class="form-control" id="CPF" name="CPF" v-mask="'###.###.###-##'">
+                <div class="invalid-feedback">
+                    {{ errors.first("CPF") }}
+                </div>
             </div>
+
             <div class="col-md-2">
                 <label for="DataNascimento">Data de Nascimento: <span>*</span></label>
-                <input type="date" class="form-control" id="DataNascimento" name="DataNascimento">
+                <input type="date" class="form-control" id="DataNascimento" name="DataNascimento" v-model="pessoa.DataNascimento"
+                       v-validate="'required|date_format:yyyy-MM-dd|date_between:1900-01-01,@dataAtual'">
+                <div class="invalid-feedback">
+                    {{ errors.first("DataNascimento") }}
+                </div>
+
             </div>
+
             <div class="col-md-2">
                 <label for="EstadoCivil">Estado Cívil: <span>*</span></label>
-                <select class="form-select" id="EstadoCivil" name="EstadoCivil">
-                    <option selected>Selecione seu estado civil</option>
-                    <option value="Solteiro(a)">Solteiro(a)</option>
-                    <option value="Casado(a)">Casado(a)</option>
-                    <option value="Divorciado(a)">Divorciado(a)</option>
-                    <option value="Viúvo(a)">Viúvo(a)</option>
+                <select class="form-select" v-validate="'required'" id="EstadoCivil" name="EstadoCivil" maxlength="20">
+                    <option selected value="">Selecione uma opção...</option>
+                    <option>Solteiro(a)</option>
+                    <option>Casado(a)</option>
+                    <option>Divorciado(a)</option>
+                    <option>Viúvo(a)</option>
                 </select>
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
+
             </div>
-            <div class="col-md-2">
+
+            <div class="col-md-2
+                 ">
                 <label>Sexo: <span>*</span></label>
                 <div class="form-check">
-                    <label for="flexRadioDefault1">Masculino</label>
-                    <input type="radio" class="form-check-input" id="flexRadioDefault1" name="Sexo" value="M">
+                    <input type="radio" v-validate="'required'" class="form-check-input" id="SexoMasculino" name="Sexo" value="M">
+                    <label for="SexoMasculino">Masculino</label>
+
                 </div>
                 <div class="form-check">
-                    <label for="flexRadioDefault2">Feminino</label>
-                    <input type="radio" class="form-check-input" id="flexRadioDefault2" name="Sexo" value="F">
+                    <label for="SexoFeminino">Feminino</label>
+                    <input type="radio" class="form-check-input" id="SexoFeminino" name="Sexo" value="F">
                 </div>
             </div>
         </div>
@@ -80,35 +172,58 @@
         <div class="row g-3">
             <div class="col-md-2">
                 <label for="CEP">CEP: <span>*</span></label>
-                <input type="text" class="form-control" id="CEP" name="CEP" v-mask="'#####-###'">
+                <input type="text" v-validate="'required'" class="form-control" id="CEP" name="CEP" v-mask="'#####-###'" maxlength="8">
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
+
             <div class="col-md-6">
                 <label for="Endereco">Endereço: <span>*</span></label>
-                <input type="text" class="form-control" id="Endereco" name="Endereco">
+                <input type="text" v-validate="'required'" class="form-control" id="Endereco" name="Endereco" maxlength="100">
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
+
             <div class="col-md-1">
                 <label for="Numero">Número:<span>*</span></label>
-                <input type="text" class="form-control" id="Numero" name="Numero">
+                <input type="text" v-validate="'required'" class="form-control" id="Numero" name="Numero" maxlength="10">
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
+
             <div class="col-md-1">
                 <label for="Complemento">Complemento:</label>
-                <input type="text" class="form-control" id="Complemento" name="Complemento">
+                <input type="text" class="form-control" id="Complemento" name="Complemento" maxlength="30">
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
         </div>
 
         <div class="row g-3">
             <div class="col-md-6">
                 <label for="Bairro">Bairro:<span>*</span></label>
-                <input type="text" class="form-control" id="Bairro" name="Bairro">
+                <input type="text" v-validate="'required'" class="form-control" id="Bairro" name="Bairro" maxlength="50">
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
+
             <div class="col-md-3">
                 <label for="Cidade">Cidade:<span>*</span></label>
-                <input type="text" class="form-control" id="Cidade" name="Cidade">
+                <input type="text" v-validate="'required'" class="form-control" id="Cidade" name="Cidade" maxlength="50">
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
+
             <div class="col-md-2">
                 <label for="UF"> UF:<span>*</span></label>
-                <select class="form-select" id="UF" name="UF">
-                    <option selected>Selecione seu Estado</option>
+                <select class="form-select" v-validate="'required'" id="UF" name="UF">
+                    <option selected value="">Selecione seu Estado</option>
                     <option value="AC">Acre</option>
                     <option value="AL">Alagoas</option>
                     <option value="AP">Amapá</option>
@@ -137,6 +252,9 @@
                     <option value="SE">Sergipe</option>
                     <option value="TO">Tocantins</option>
                 </select>
+                <div class="invalid-feedback">
+                    Campo obrigatório.
+                </div>
             </div>
 
             <div class="col-md-2">

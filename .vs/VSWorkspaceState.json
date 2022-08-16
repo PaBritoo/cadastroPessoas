@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\CadastroPessoas",
+    "\\CadastroPessoas\\Controllers",
+    "\\CadastroPessoas\\Migrations",
+    "\\CadastroPessoas\\Models",
+    "\\CadastroPessoas\\Scripts",
+    "\\CadastroPessoas\\ViewModels",
+    "\\CadastroPessoas\\Views",
+    "\\CadastroPessoas\\Views\\Home",
+    "\\CadastroPessoas\\Views\\Pessoa"
+  ],
+  "SelectedNode": "\\CadastroPessoas.sln",
+  "PreviewInSolutionExplorer": false
+}

@@ -1,4 +1,5 @@
-﻿namespace CadastroPessoas.Migrations
+﻿
+namespace CadastroPessoas.Migrations
 {
     using System;
     using System.Data.Entity;
