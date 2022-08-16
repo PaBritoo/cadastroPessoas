@@ -11,6 +11,7 @@
     <script src="~/Scripts/vue-the-mask.js"></script>
     <script src="~/Scripts/vee-validate.js"></script>
     <script src="~/Scripts/axios.js"></script>
+    <script src="~/Scripts/promise.js"></script>
 
     <script>
         Vue.use(VueTheMask);
@@ -58,6 +59,21 @@
         }
 
         function verificarCpfJaCadastrado(cpfDigitado) {
+            return new Promise(function (resolve) {
+                axios.get('/api/pessoa/verificar-cpf-ja-cadastrado', { params: { cpf: cpfDigitado } }).then(function (resposta) {
+                    resolve({
+                        valid: !resposta.data.resultado,
+                        data: 'CPF já cadastrado'
+                    });
+                }).catch(function () {
+                    resolve({
+                        valid: false,
+                        data: 'Erro ao validar CPF'
+                    });
+                });
+            });
+        }
+        /*function verificarCpfJaCadastrado(cpfDigitado) {
             return new Promise(axios.get('/api/pessoa/verificar-cpf-ja-cadastrado', { params: { cpf: cpfDigitado } }).then(function (resposta) {
                     resolve({
                         valid: resposta.data.resultado,
@@ -69,8 +85,8 @@
                         data: "Erro ao validar o CPF"
                     });
                 }));
-        }
-        
+        }*/
+
 
         new Vue({
             el: '#formCadastroPessoas',
