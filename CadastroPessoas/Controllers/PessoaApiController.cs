@@ -17,7 +17,7 @@ namespace CadastroPessoas.Controllers
         [HttpGet]
         public IHttpActionResult VerificarCpfJaCadastrado(string cpf)
         {
-            cpf = Regex.Replace(cpf, "[^^0-9]", string.Empty);
+            cpf = Regex.Replace(cpf, "[^^0-9]", string.Empty);              
             using(Conexao db = new Conexao())
             {
                 bool existeCpf = db.Pessoa.Any(c => c.CPF == cpf); 

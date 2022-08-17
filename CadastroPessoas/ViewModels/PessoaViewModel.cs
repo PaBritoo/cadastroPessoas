@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace CadastroPessoas.ViewModels
@@ -110,6 +111,18 @@ namespace CadastroPessoas.ViewModels
             if (UF.Length > 2)
                 throw new ApplicationException("O campo UF só pode ter 2 caracteres");
 
+        }
+
+        public void TratarDados()                                     /* Tratamento da forma que os dados serão enviados para o banco de dados*/
+        {
+            Nome = Nome?.ToUpper().Trim();                             /*metodo ToUpper deixa todas letras maiusculas , metodo Trim remove possiveis espaços de inicio de final */
+            CPF = Regex.Replace(CPF, "[^^0-9]", string.Empty);        /* Está removendo/trocando tudo que não é número por string vazia */
+            CEP = Regex.Replace(CEP, "[^^0-9]", string.Empty);
+            Endereco = Endereco?.ToUpper().Trim();
+            Numero = Numero?.ToUpper().Trim();
+            Complemento = Complemento?.ToUpper().Trim();
+            Bairro = Bairro?.ToUpper().Trim();
+            Cidade = Cidade?.ToUpper().Trim();
         }
 
            public bool ValidarCPF(string vrCPF)

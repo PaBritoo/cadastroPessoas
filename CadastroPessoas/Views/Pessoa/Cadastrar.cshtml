@@ -7,13 +7,20 @@
     string dataAtualFormatoBrasileiro = string.Format("{0:dd/MM/yyyy}", DateTime.Now);
 }
 
+@section Styles {                                             
+    <style>                                                                          /* deixa todos os campos tipo texto com estilo (CSS) letras maiusculas    */
+        input[type=text] {
+            text-transform: uppercase;
+        }
+    </style>
+    }
+
 @section Scripts {
     <script src="~/Scripts/vue-the-mask.js"></script>
     <script src="~/Scripts/vee-validate.js"></script>
     <script src="~/Scripts/axios.js"></script>
-    <script src="~/Scripts/promise.js"></script>
-
-    <script>
+    <script src="~/Scripts/promise.js"></script> 
+     <script>
         Vue.use(VueTheMask);
         Vue.use(VeeValidate, {
             classes: true,
@@ -73,21 +80,7 @@
                 });
             });
         }
-        /*function verificarCpfJaCadastrado(cpfDigitado) {
-            return new Promise(axios.get('/api/pessoa/verificar-cpf-ja-cadastrado', { params: { cpf: cpfDigitado } }).then(function (resposta) {
-                    resolve({
-                        valid: resposta.data.resultado,
-                        data: 'CPF já cadastrado.'
-                    })
-                }).catch(function () {
-                    resolve({
-                        valid: false,
-                        data: "Erro ao validar o CPF"
-                    });
-                }));
-        }*/
-
-
+     
         new Vue({
             el: '#formCadastroPessoas',
             data: {
@@ -107,7 +100,16 @@
                     },
                     validate: verificarCpfJaCadastrado
                 });
-
+            },
+            methods: {
+                salvar: function (event) {                                                    /*validação do VeeValidate para conferir se não tem nenhum campo inválido*/
+                    this.$validator.validateAll().then(function (valido) {               /*validateAll irá validar todos os campos do formulario*/
+                        if (valido) {
+                            event.target.submit();
+                            return;
+                        }
+                    });                     
+                }
             }
         })
 
@@ -127,7 +129,7 @@
 }
 
 <div id="formCadastroPessoas">
-    <form method="post" action="/Pessoa/CadastrarPost">
+    <form method="post" action="/Pessoa/CadastrarPost" v-on:submit.prevent="salvar(event)">
         <div class="row g-3">
             <div class="col-md-4">
                 <label for="Nome">Nome: <span>*</span></label>
@@ -188,7 +190,7 @@
         <div class="row g-3">
             <div class="col-md-2">
                 <label for="CEP">CEP: <span>*</span></label>
-                <input type="text" v-validate="'required'" class="form-control" id="CEP" name="CEP" v-mask="'#####-###'" maxlength="8">
+                <input type="text" v-validate="'required'" class="form-control" id="CEP" name="CEP" v-mask="'#####-###'">
                 <div class="invalid-feedback">
                     Campo obrigatório.
                 </div>

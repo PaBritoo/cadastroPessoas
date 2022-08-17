@@ -10,6 +10,36 @@ namespace CadastroPessoas.Controllers
 {
     public class PessoaController : Controller
     {
+        public ActionResult Listar()
+        {
+            using (Conexao db = new Conexao())                                       /*conexao com banco de dados*/        
+            {
+                List<Pessoa> pessoasModels = db.Pessoa.ToList();                     /*db.Pessoa.ToList esta puxando tudo que está cadastrado no banco de dados e irá guardar tudo dentro da variavel criada (pessoaModels)*/
+                List<PessoaViewModel> pessoasVms = new List<PessoaViewModel>();
+
+                foreach (Pessoa item in pessoasModels)                               /*irá executar uma açao para cada item da lista >pessoaModels<*/
+                {
+                    PessoaViewModel pessoaVm = new PessoaViewModel();
+                    pessoaVm.Nome = item.Nome;
+                    pessoaVm.DataNascimento = item.DataNascimento;
+                    pessoaVm.Sexo = item.Sexo;
+                    pessoaVm.EstadoCivil = item.EstadoCivil;
+                    pessoaVm.CPF = item.CPF;
+                    pessoaVm.CEP = item.CEP;
+                    pessoaVm.Endereco = item.Endereco;
+                    pessoaVm.Numero = item.Numero;
+                    pessoaVm.Complemento = item.Complemento;
+                    pessoaVm.Bairro = item.Bairro;
+                    pessoaVm.Cidade = item.Cidade;
+                    pessoaVm.UF = item.UF;
+
+                    pessoasVms.Add(pessoaVm);
+                }
+
+                return View(pessoasVms);
+            }
+
+        }
                 
         public ActionResult Cadastrar()
         {
@@ -23,7 +53,8 @@ namespace CadastroPessoas.Controllers
         [HttpPost]                                                      //http post serve para enviar dados e httpGet serve para receber dados
         public ActionResult CadastrarPost(PessoaViewModel dados)
         {
-            dados.Validar();
+            dados.TratarDados();
+            dados.Validar();                                       /* irá tratar os dados antes de validar*/
 
             Pessoa model = new Pessoa();                          // criar novo registro da tabela Pessoa - ou seja criar uma variavel do tipo Pessoa
             model.Nome = dados.Nome;
