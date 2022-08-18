@@ -6,15 +6,15 @@
     @RenderSection("Styles", required: false);
 </head>
 <body>
-     <div class="container">
+    <div class="container">
         <h1 class="display-3"> Sistema de Cadastro de Pessoas</h1>
         <hr />
-            @RenderBody()
-     </div>
+        @RenderBody()
+    </div>
 
-        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-        <script src="~/Scripts/bootstrap.min.js"></script>
-        <script src="~/Scripts/vue.min.js"></script>
-        @RenderSection("Scripts", required: true)
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/vue.min.js"></script>             
+    @RenderSection("Scripts", required: false)           @*mudei  o true para false para abrir a pagina listar, pois estava dando erro nesta tag*@
 </body>
 </html>

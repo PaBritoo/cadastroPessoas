@@ -6,18 +6,47 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+
 namespace CadastroPessoas.Controllers
 {
     public class PessoaController : Controller
     {
         public ActionResult Listar()
         {
-            using (Conexao db = new Conexao())                                       /*conexao com banco de dados*/        
+            using(Conexao db = new Conexao())
             {
-                List<Pessoa> pessoasModels = db.Pessoa.ToList();                     /*db.Pessoa.ToList esta puxando tudo que está cadastrado no banco de dados e irá guardar tudo dentro da variavel criada (pessoaModels)*/
+                List<Pessoa> pessoasModels = db.Pessoa.ToList();
                 List<PessoaViewModel> pessoasVms = new List<PessoaViewModel>();
 
-                foreach (Pessoa item in pessoasModels)                               /*irá executar uma açao para cada item da lista >pessoaModels<*/
+                foreach (Pessoa item in pessoasModels)
+                {
+                    PessoaViewModel pessoaVm = new PessoaViewModel();
+                    pessoaVm.Nome = item.Nome;
+                    pessoaVm.DataNascimento = item.DataNascimento;
+                    pessoaVm.Sexo = item.Sexo;
+                    pessoaVm.EstadoCivil = item.EstadoCivil;
+                    pessoaVm.CPF = item.CPF;
+                    pessoaVm.CEP = item.CEP;
+                    pessoaVm.Endereco = item.Endereco;
+                    pessoaVm.Numero = item.Numero;
+                    pessoaVm.Complemento = item.Complemento;
+                    pessoaVm.Bairro = item.Bairro;
+                    pessoaVm.Cidade = item.Cidade;
+                    pessoaVm.UF = item.UF;
+
+                    pessoasVms.Add(pessoaVm);
+                }
+
+                return View(pessoasVms);
+            }
+        }
+      /*  {
+            using (Conexao db = new Conexao())                                       >>conexao com banco de dados<<    
+            {
+                List<Pessoa> pessoasModels = db.Pessoa.ToList();                     >>db.Pessoa.ToList esta puxando tudo que está cadastrado no banco de dados e irá guardar tudo dentro da variavel criada (pessoaModels)<<
+                List<PessoaViewModel> pessoasVms = new List<PessoaViewModel>();
+
+                foreach (Pessoa item in pessoasModels)                               >>irá executar uma açao para cada item da lista >pessoaModels<<
                 {
                     PessoaViewModel pessoaVm = new PessoaViewModel();
                     pessoaVm.Nome = item.Nome;
@@ -39,7 +68,7 @@ namespace CadastroPessoas.Controllers
                 return View(pessoasVms);
             }
 
-        }
+        }*/
                 
         public ActionResult Cadastrar()
         {

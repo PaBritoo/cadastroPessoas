@@ -10,11 +10,42 @@ namespace CadastroPessoas.ViewModels
     public class PessoaViewModel
     {
         public string Nome { get; set; }
+
         public DateTime? DataNascimento { get; set; }
+        public string DataNascimentoFormatada => string.Format("{0:dd/MM/yyyy}", DataNascimento);
+
         public string Sexo { get; set; }
+        public string SexoFormatado
+        {
+            get
+            {
+                if (Sexo == "M")
+                    return "Masculino";
+                else
+                    return "Feminino";
+            }
+        }
+
         public string EstadoCivil { get; set; }
+
         public string CPF { get; set; }
+        public string CPFFormatado
+        {
+            get
+            {
+                return Convert.ToUInt64(CPF).ToString(@"000\.000\.000\-00");
+            }
+        }
+
         public string CEP { get; set; }
+        public string CEPFormatado
+        {
+            get
+            {
+                return Convert.ToUInt64(CEP).ToString(@"00000\-000");
+            }
+        }
+
         public string Endereco { get; set; }
         public string Numero { get; set; }
         public string Complemento { get; set; }
