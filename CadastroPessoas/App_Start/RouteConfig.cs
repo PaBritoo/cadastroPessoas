@@ -13,11 +13,15 @@ namespace CadastroPessoas
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapMvcAttributeRoutes();
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Pessoa", action = "Cadastrar", id = UrlParameter.Optional }
+                defaults: new { controller = "Pessoa", action = "Listar", id = UrlParameter.Optional }
             );
+
+            
         }
     }
 }

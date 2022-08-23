@@ -1,12 +1,28 @@
 ﻿@using CadastroPessoas.ViewModels;
+@using Newtonsoft.Json;                              <!--biblioteca utilizada pats converter uma view model em json-->
+
 @model IEnumerable<CadastroPessoas.ViewModels.PessoaViewModel>
 
 @{
     ViewBag.Title = "Listar";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string jsonPessoas = JsonConvert.SerializeObject(Model); <!--serializeObject transforma uma lista de classes c# em json e pode ser usada em javascript -->
 }
 
-
+@section Scripts {
+    <script>
+        new Vue({
+            el: '#listar',
+            data: {
+                pessoas: @Html.Raw(jsonPessoas)
+            },
+            methods: {
+                mostrarJanelaConfirmarExclusao = new bootstrap.Modal(document.getElementById('winConfirmarExclusao'), keyboard)
+            }
+        }
+    })
+    </script>
+}
 
 
 <div class=" row">
@@ -14,49 +30,77 @@
         <h2>Listagem</h2>
     </div>
     <div class="col-md-3">
-        <a href="/Pessoa/Cadastrar" class="btn btn-primary pull-right">Cadastrar Nova Pessoa</a>
+        <a href="@Url.RouteUrl("cadastrar")" class="btn btn-primary float-end">Cadastrar Nova Pessoa</a>
 
     </div>
-    
+
 </div>
 
-<table class="table table-striped table-sm table-bordered border-primary">
-    <thead>
-        <tr>
-            <th scope="col">Nome</th>
-            <th scope="col">Data de Nascismento</th>
-            <th scope="col">Sexo</th>
-            <th scope="col">Estado Civil</th>
-            <th scope="col">CPF</th>
-            <th scope="col">CEP</th>
-            <th scope="col">Endereço</th>
-            <th scope="col">Número</th>
-            <th scope="col">Complemento</th>
-            <th scope="col">Bairro</th>
-            <th scope="col">Cidade</th>
-            <th scope="col">UF</th>
-        </tr>
-    </thead>
-    <tbody>
-        
-            @foreach (PessoaViewModel item in Model)
-            {
-                <tr>
-                    <td>@item.Nome</td>
-                    <td>@item.DataNascimentoFormatada</td>
-                    <td>@item.SexoFormatado</td>
-                    <td>@item.EstadoCivil</td>
-                    <td>@item.CPFFormatado</td>
-                    <td>@item.CEPFormatado</td>
-                    <td>@item.Endereco</td>
-                    <td>@item.Numero</td>
-                    <td>@item.Complemento</td>
-                    <td>@item.Bairro</td>
-                    <td>@item.Cidade</td>
-                    <td>@item.UF</td>
-                </tr>
+<div id="listar">
+    <table class="table table-striped table-sm table-bordered border-primary">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Data de Nascismento</th>
+                <th scope="col">Sexo</th>
+                <th scope="col">Estado Civil</th>
+                <th scope="col">CPF</th>
+                <th scope="col">CEP</th>
+                <th scope="col">Endereço</th>
+                <th scope="col">Número</th>
+                <th scope="col">Complemento</th>
+                <th scope="col">Bairro</th>
+                <th scope="col">Cidade</th>
+                <th scope="col">UF</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="item in pessoas">
+                <td>{{item.Nome}}</td>
+                <td>{{item.DataNascimentoFormatad}}</td>
+                <td>{{item.SexoFormatado}}</td>
+                <td>{{item.EstadoCivil}}</td>
+                <td>{{item.CPFFormatado}}</td>
+                <td>{{item.CEPFormatado}}</td>
+                <td>{{item.Endereco}}</td>
+                <td>{{item.Numero}}</td>
+                <td>{{item.Complemento}}</td>
+                <td>{{item.Bairro}}</td>
+                <td>{{item.Cidade}}</td>
+                <td>{{item.UF}}</td>
+                <td>
+                    <button class="btn btn-danger" v-on:click="mostrarJanelaConfirmarExclusao()">Excluir1</button>
 
-            }
-       
-    </tbody>
-</table>
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#winConfirmarExclusao">Excluir</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="winConfirmarExclusao" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Deseja excluir este cadastro?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Understood</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <p v-if="pessoas.length === 0"> Nenhuma pessoa cadastrada.</p>
+</div>
+
+
+

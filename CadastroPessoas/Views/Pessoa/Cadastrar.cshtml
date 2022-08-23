@@ -123,7 +123,7 @@
 }
 
 <div id="formCadastroPessoas">
-    <form method="post" action="/Pessoa/CadastrarPost" v-on:submit.prevent="salvar(event)">
+    <form method="post" action="@Url.RouteUrl("cadastrarPost")" v-on:submit.prevent="salvar(event)">         <!-- aUrl.RouteUrl serve para mandar para a rota desejada-->
         <div class="row g-3">
             <div class="col-md-4">
                 <label for="Nome">Nome: <span>*</span></label>
@@ -271,7 +271,7 @@
 
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary">Salvar</button>
-                <a href="/Pessoa/Listar" class="btn btn-light">Voltar</a>
+                <a href="@Url.RouteUrl("listar")" class="btn btn-light">Voltar</a>
             </div>
         </div>
     </form>
